@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request, make_response
 import jwt
 import datetime
+from functools import wraps
 
 # initialize main Flask object
 if __name__ == '__main__':
@@ -8,14 +9,31 @@ if __name__ == '__main__':
 
 app.config['SECRET_KEY'] = 'some_secret_key'
 
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.args.get('token') #get token from URL
+
+        if not token:
+            return jsonify({'message': 'Token is missing!'}), 403
+
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'])
+        except:
+            return jsonify({'message': 'Invalid token supplied!'}), 403
+        return f(*args, **kwargs)
+
+    return decorated
+
 # ROUTES DEFINITION:
 @app.route('/unprotected')
 def unprotected():
-    return 'This is unprotected area'
+    return jsonify({'message': 'Anyone can view this!'})
 
 @app.route('/protected')
+@token_required
 def protected():
-    return 'This is protected area'
+    return jsonify({'message': 'Protected area'})
 
 @app.route('/login')
 def login():
