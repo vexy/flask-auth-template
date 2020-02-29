@@ -8,8 +8,8 @@ Perhaps the easiest way to start using this template would be as follows:
   - `cd flask-auth-template`
   - `pip install requirements.txt`
 
-**NOTE:** if you're on `MacOS` platforms, there might be a struggle with running this project due to known collision of `Python2.7` and `Python3+`. By default `pip` will (assume) install dependencies to Python2 while `pip3` will place them under Python3.
-If you're having trouble starting this project, try installing all the requirements using: `pip3 install requirements.txt`
+**NOTE:** if you're on `MacOS` platforms, there might be a struggle with running this project due to known collision of `Python2.7` and `Python3+`. The conflict might be seen as "Module Import Error" no matter which Python you are using.
+To solve this, you might have to "fix" your `PYTHONPATH`.  Check out this [article](https://bic-berkeley.github.io/psych-214-fall-2016/using_pythonpath.html) for more information.
 
 ### JWT based
 `JSON Web Tokens` - or [JWT](https://jwt.io/) in short - are the foundation of the authentication mechanism presented here.  
