@@ -7,9 +7,10 @@ from functools import wraps
 if __name__ == '__main__':
     app = Flask(__name__)
 
+# used as part of your authentication strategy
 app.config['SECRET_KEY'] = 'some_secret_key'
 
-def token_required(f):
+def token_access_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = request.args.get('token') #get token from URL
@@ -25,31 +26,53 @@ def token_required(f):
 
     return decorated
 
+# ---------------------------------
 # ROUTES DEFINITION:
-@app.route('/unprotected')
-def unprotected():
-    return jsonify({'message': 'Anyone can view this!'})
-
-@app.route('/protected')
-@token_required
+@app.route('/private')
+@token_access_required
 def protected():
     return jsonify({'message': 'Protected area'})
 
+@app.route('/public')
+def unprotected():
+    return jsonify({'message': 'Anyone can view this!'})
+
 @app.route('/login')
 def login():
+    # get authorization field from HTTP request
+    # and early exit if it doesn't exist
     auth = request.authorization
-    if auth and auth.password == 'password':
-        token_expiration = str(datetime.datetime.utcnow() + datetime.timedelta(minutes=30))
-        token = jwt.encode(
-        {
-            'user': auth.username,
-            'expiration': token_expiration
-        }, app.config['SECRET_KEY'], algorithm='HS256')
+    if not auth:
+        return make_response("Where's your token 🤔", 401, {'WWW-Authenticate': 'Basic realm="Login required"'})
 
+    # 👇 DIFFERENT STRATEGIES POSSIBLE 👇
+    if auth.password == 'password':
+        # calculate token expity and form final token
+        tokenExpiry = setupExpiry()
+        token = generateToken(tokenExpiry)
         return jsonify({'token': token.decode('UTF-8')})
 
     return make_response('Could not verify!', 401, {'WWW-Authenticate': 'Basic realm="Login required"'})
 
-# start the server
+# 👇 DIFFERENT STRATEGIES POSSIBLE 👇
+def setupExpiry():
+    # sets token expiration to 30 minutes from now
+    return str(datetime.datetime.utcnow() + datetime.timedelta(minutes=30))
+
+# 👇 DIFFERENT STRATEGIES POSSIBLE 👇
+def generateToken(exipry):
+    # define content as a mix of username and expiration date
+    tokenContent = {
+        'user': auth.username,
+        'expiration': token_expiration
+    }
+
+    # 'crypt' it this way:
+    fullToken = jwt.encode(tokenContent, app.config['SECRET_KEY'], algorithm='HS256')
+    return fullToken
+
+
+# ---------------------------------
+# Server start procedure
 if __name__ == '__main__':
     app.run(debug=True)
