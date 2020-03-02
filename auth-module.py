@@ -1,6 +1,6 @@
-from flask import Flask, jsonify, request, make_response
 import jwt
 import datetime
+from flask import Flask, jsonify, request, make_response
 from functools import wraps
 
 # initialize main Flask object
@@ -10,6 +10,7 @@ if __name__ == '__main__':
 # used as part of your authentication strategy
 app.config['SECRET_KEY'] = 'some_secret_key'
 
+# protector function wraping other functions
 def token_access_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -35,7 +36,7 @@ def protected():
 
 @app.route('/public')
 def unprotected():
-    return jsonify({'message': 'Anyone can view this!'})
+    return jsonify({'message': 'This is public domain'})
 
 @app.route('/login')
 def login():
