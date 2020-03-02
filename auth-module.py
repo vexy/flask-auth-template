@@ -2,6 +2,9 @@ import jwt
 import datetime
 from flask import Flask, jsonify, request, make_response
 from functools import wraps
+import moduleB
+
+moduleB.functionA()
 
 # initialize main Flask object
 if __name__ == '__main__':
