@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import jwt
 import datetime
 
@@ -21,9 +22,9 @@ class Tokenizer():
         return fullToken
 
     # returns a decoded token
-    def decodeToken(self, rawData):
-        output = jwt.decode(rawData, self.secretKey)
-        print("Decoded token: " + output)
+    def decodeToken(self, rawToken):
+        output = jwt.decode(rawToken, self.secretKey, algorithms=['HS256'])
+        print("<TOKENIZER> Decoded token: " + str(output))
         return output
 
 

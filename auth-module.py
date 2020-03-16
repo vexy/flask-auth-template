@@ -1,4 +1,5 @@
 
+# -*- coding: utf-8 -*-
 from flask import Flask, jsonify, request, make_response
 from functools import wraps
 from tokenizer.tokenizer import Tokenizer
@@ -15,36 +16,31 @@ def token_access_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = request.args.get('token') #get token from URL
-        print("Retrieved token = " + token)
 
         if not token:
             return jsonify({'message': 'Token is missing!'}), 403
 
         try:
-            # check for token existance
-            # data = jwt.decode(token, app.config['SECRET_KEY'])
-
-            # initialize tokenizer
+            # make sure we can decode token
             tokenSupport = Tokenizer(app.config['SECRET_KEY'])
-            # check if we can pull out token
             decoded = tokenSupport.decodeToken(token)
-            print("Decoded token: " + decoded)
         except:
-            return jsonify({'message': 'Invalid token supplied!'}), 403
+            return jsonify({'message': 'Invalid token supplied!'}), 401
         return f(*args, **kwargs)
 
     return decorated
 
 # ---------------------------------
 # ROUTES DEFINITION:
-@app.route('/private')
+@app.route('/protected')
 @token_access_required
 def protected():
-    return jsonify({'message': 'Protected area'})
+    resp_body = jsonify({'message': 'Protected area.'})
+    return resp_body
 
 @app.route('/public')
 def unprotected():
-    return jsonify({'message': 'This is public domain'})
+    return jsonify({'message': 'This is public domain.'})
 
 @app.route('/login')
 def login():
@@ -52,20 +48,20 @@ def login():
     # and early exit if it doesn't exist
     auth = request.authorization
     if not auth:
-        return make_response("Where's your token 🤔", 401, {'WWW-Authenticate': 'Basic realm="Login required"'})
+        return make_response("Token based login required 🤔", 401, {'WWW-Authenticate': 'Basic realm="Login required"'})
 
     # 👇 DIFFERENT STRATEGIES POSSIBLE 👇
-    if auth.password == 'test':
+    if auth.password == 'test123':
         username = auth.username
 
-        # initialize tokenizer and get token
+        # create new token using Tokenizer
         tokenSupport = Tokenizer(app.config['SECRET_KEY'])
-        token = tokenSupport.createToken(username)
+        newToken = tokenSupport.createToken(username)
 
         utfDecodedToken = token.decode('UTF-8')
         return jsonify({'token': utfDecodedToken})
 
-    return make_response('Could not verify!', 401, {'WWW-Authenticate': 'Basic realm="Login required"'})
+    return make_response("Credentials don't match. Try again", 401)
 
 
 # ---------------------------------
