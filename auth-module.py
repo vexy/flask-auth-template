@@ -15,18 +15,18 @@ def token_access_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = request.args.get('token') #get token from URL
-        print("Retrieved token = " + token)
 
         if not token:
             return jsonify({'message': 'Token is missing!'}), 403
 
         try:
+            print("Retrieved token = " + token)
             # check for token existance
             # data = jwt.decode(token, app.config['SECRET_KEY'])
 
             # initialize tokenizer
-            tokenSupport = Tokenizer(app.config['SECRET_KEY'])
             # check if we can pull out token
+            tokenSupport = Tokenizer(app.config['SECRET_KEY'])
             decoded = tokenSupport.decodeToken(token)
             print("Decoded token: " + decoded)
         except:
@@ -37,20 +37,25 @@ def token_access_required(f):
 
 # ---------------------------------
 # ROUTES DEFINITION:
-@app.route('/private')
+@app.route('/protected')
 @token_access_required
 def protected():
-    return jsonify({'message': 'Protected area'})
+    resp_body = jsonify({'message': 'Protected area.'})
+    return resp_body
 
 @app.route('/public')
 def unprotected():
-    return jsonify({'message': 'This is public domain'})
+    return jsonify({'message': 'This is public domain.'})
 
 @app.route('/login')
 def login():
     # get authorization field from HTTP request
     # and early exit if it doesn't exist
     auth = request.authorization
+
+    print("All auth fields dump")
+    for k in auth:
+        print("auth[" + k + "] = " + auth[k])
     if not auth:
         return make_response("Where's your token 🤔", 401, {'WWW-Authenticate': 'Basic realm="Login required"'})
 
