@@ -24,7 +24,6 @@ class Tokenizer():
     # returns a decoded token
     def decodeToken(self, rawToken):
         output = jwt.decode(rawToken, self.secretKey, algorithms=['HS256'])
-        print("<TOKENIZER> Decoded token: " + str(output))
         return output
 
 

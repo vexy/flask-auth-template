@@ -30,17 +30,21 @@ def token_access_required(f):
 
     return decorated
 
-# ---------------------------------
+
+
 # ROUTES DEFINITION:
+# ---------------------------------
 @app.route('/protected')
 @token_access_required
 def protected():
-    resp_body = jsonify({'message': 'Protected area.'})
+    resp_body = jsonify({'message': 'Welcome to protected area, you made it'})
     return resp_body
 
-@app.route('/public')
-def unprotected():
-    return jsonify({'message': 'This is public domain.'})
+# Publicly accessible
+# ---------------------------------
+@app.route('/')
+def home():
+    return jsonify({'message': 'This is root of the domain. Public area'})
 
 @app.route('/login')
 def login():
@@ -51,7 +55,7 @@ def login():
         return make_response("Token based login required 🤔", 401, {'WWW-Authenticate': 'Basic realm="Login required"'})
 
     # 👇 DIFFERENT STRATEGIES POSSIBLE 👇
-    if auth.password == 'test123':
+    if auth.password == 'test':
         username = auth.username
 
         # create new token using Tokenizer
@@ -62,6 +66,32 @@ def login():
         return jsonify({'token': utfDecodedToken})
 
     return make_response("Credentials don't match. Try again", 401)
+
+@app.route('/register', methods=['POST'])
+def registration():
+    '''
+        Expecting this JSON:
+        {
+            'username' : "abc",
+            'password': "abc",
+            'email': "abc@abc"
+        }
+    '''
+    #try to get the body data as JSON, fail otherwise
+    try:
+        body = request.json
+        app.logger.info("Received: " + str(body))
+        if body:
+            username = body['username']
+            pwd = body['password']
+            email = body['email']
+
+            app.logger.info("New user received: " + username + "email: " + email)
+            return make_response("Welcome <strong>{}</strong>. Have a pleasant stay".format(username), 201)
+    except:
+        app.logger.info("Unable to parse POST")
+
+    return make_response("Wrong parameters. Try again", 400)
 
 
 # ---------------------------------
