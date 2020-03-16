@@ -1,10 +1,7 @@
-import jwt
-import datetime
+
 from flask import Flask, jsonify, request, make_response
 from functools import wraps
-import moduleB
-
-moduleB.functionA()
+from tokenizer.tokenizer import Tokenizer
 
 # initialize main Flask object
 if __name__ == '__main__':
@@ -18,12 +15,20 @@ def token_access_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = request.args.get('token') #get token from URL
+        print("Retrieved token = " + token)
 
         if not token:
             return jsonify({'message': 'Token is missing!'}), 403
 
         try:
-            data = jwt.decode(token, app.config['SECRET_KEY'])
+            # check for token existance
+            # data = jwt.decode(token, app.config['SECRET_KEY'])
+
+            # initialize tokenizer
+            tokenSupport = Tokenizer(app.config['SECRET_KEY'])
+            # check if we can pull out token
+            decoded = tokenSupport.decodeToken(token)
+            print("Decoded token: " + decoded)
         except:
             return jsonify({'message': 'Invalid token supplied!'}), 403
         return f(*args, **kwargs)
@@ -50,30 +55,17 @@ def login():
         return make_response("Where's your token 🤔", 401, {'WWW-Authenticate': 'Basic realm="Login required"'})
 
     # 👇 DIFFERENT STRATEGIES POSSIBLE 👇
-    if auth.password == 'password':
-        # calculate token expity and form final token
-        tokenExpiry = setupExpiry()
-        token = generateToken(tokenExpiry)
-        return jsonify({'token': token.decode('UTF-8')})
+    if auth.password == 'test':
+        username = auth.username
+
+        # initialize tokenizer and get token
+        tokenSupport = Tokenizer(app.config['SECRET_KEY'])
+        token = tokenSupport.createToken(username)
+
+        utfDecodedToken = token.decode('UTF-8')
+        return jsonify({'token': utfDecodedToken})
 
     return make_response('Could not verify!', 401, {'WWW-Authenticate': 'Basic realm="Login required"'})
-
-# 👇 DIFFERENT STRATEGIES POSSIBLE 👇
-def setupExpiry():
-    # sets token expiration to 30 minutes from now
-    return str(datetime.datetime.utcnow() + datetime.timedelta(minutes=30))
-
-# 👇 DIFFERENT STRATEGIES POSSIBLE 👇
-def generateToken(exipry):
-    # define content as a mix of username and expiration date
-    tokenContent = {
-        'user': auth.username,
-        'expiration': token_expiration
-    }
-
-    # 'crypt' it this way:
-    fullToken = jwt.encode(tokenContent, app.config['SECRET_KEY'], algorithm='HS256')
-    return fullToken
 
 
 # ---------------------------------
