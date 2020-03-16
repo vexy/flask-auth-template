@@ -1,14 +1,7 @@
-import jwt
-import datetime
+
 from flask import Flask, jsonify, request, make_response
 from functools import wraps
 from tokenizer.tokenizer import Tokenizer
-
-# test moduling
-print("Testing tokenizer")
-tk = Tokenizer()
-tk.createToken()
-tk.decodeToken()
 
 # initialize main Flask object
 if __name__ == '__main__':
@@ -27,7 +20,9 @@ def token_access_required(f):
             return jsonify({'message': 'Token is missing!'}), 403
 
         try:
-            data = jwt.decode(token, app.config['SECRET_KEY'])
+            # initialize tokenizer
+            tokenSupport = Tokenizer()
+            data = tokenSupport(token, app.config['SECRET_KEY'])
         except:
             return jsonify({'message': 'Invalid token supplied!'}), 403
         return f(*args, **kwargs)
@@ -54,30 +49,16 @@ def login():
         return make_response("Where's your token 🤔", 401, {'WWW-Authenticate': 'Basic realm="Login required"'})
 
     # 👇 DIFFERENT STRATEGIES POSSIBLE 👇
-    if auth.password == 'password':
-        # calculate token expity and form final token
-        tokenExpiry = setupExpiry()
-        token = generateToken(tokenExpiry)
-        return jsonify({'token': token.decode('UTF-8')})
+    if auth.password == 'test':
+        # initialize tokenizer
+        tokenSupport = Tokenizer()
+
+        usrname = auth.username
+        token = tokenSupport(username, app.config['SECRET_KEY'])
+        utfDecodedToken = token.decode('UTF-8')
+        return jsonify({'token': utfDecodedToken})
 
     return make_response('Could not verify!', 401, {'WWW-Authenticate': 'Basic realm="Login required"'})
-
-# 👇 DIFFERENT STRATEGIES POSSIBLE 👇
-def setupExpiry():
-    # sets token expiration to 30 minutes from now
-    return str(datetime.datetime.utcnow() + datetime.timedelta(minutes=30))
-
-# 👇 DIFFERENT STRATEGIES POSSIBLE 👇
-def generateToken(exipry):
-    # define content as a mix of username and expiration date
-    tokenContent = {
-        'user': auth.username,
-        'expiration': token_expiration
-    }
-
-    # 'crypt' it this way:
-    fullToken = jwt.encode(tokenContent, app.config['SECRET_KEY'], algorithm='HS256')
-    return fullToken
 
 
 # ---------------------------------
