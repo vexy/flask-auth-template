@@ -2,9 +2,13 @@ import jwt
 import datetime
 from flask import Flask, jsonify, request, make_response
 from functools import wraps
-import moduleB
+from tokenizer.tokenizer import Tokenizer
 
-moduleB.functionA()
+# test moduling
+print("Testing tokenizer")
+tk = Tokenizer()
+tk.createToken()
+tk.decodeToken()
 
 # initialize main Flask object
 if __name__ == '__main__':
