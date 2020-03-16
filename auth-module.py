@@ -2,7 +2,14 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, jsonify, request, make_response
 from functools import wraps
-from tokenizer.tokenizer import Tokenizer
+from services.tokenizer import Tokenizer
+from services.storage import UserDataStorage
+from models.user import User
+
+# initialize in memory token storage
+ds = UserDataStorage()
+usr = UserDataStorage()
+
 
 # initialize main Flask object
 if __name__ == '__main__':
@@ -48,45 +55,53 @@ def home():
 
 @app.route('/login')
 def login():
-    # get authorization field from HTTP request
-    # and early exit if it doesn't exist
+    # get authorization field from HTTP request, early exit if it's not present
     auth = request.authorization
     if not auth:
-        return make_response("Token based login required 🤔", 401, {'WWW-Authenticate': 'Basic realm="Login required"'})
+        return make_response("HTTP Basic Authentication required 🤔", 401, {'WWW-Authenticate': 'Basic realm="Login required"'})
 
-    # 👇 DIFFERENT STRATEGIES POSSIBLE 👇
-    if auth.password == 'test':
+    try: # search our storage to check credentials
         username = auth.username
+        password = auth.password
+        storedUser = ds.getData(username)
 
-        # create new token using Tokenizer
-        tokenSupport = Tokenizer(app.config['SECRET_KEY'])
-        newToken = tokenSupport.createToken(username)
+        # 👇 perform validity check and password hashing 👇
+        if storedUser is not None and storedUser.password == password:
+            # create new token using Tokenizer
+            tokenSupport = Tokenizer(app.config['SECRET_KEY'])
+            newToken = tokenSupport.createToken(username)
 
-        utfDecodedToken = token.decode('UTF-8')
-        return jsonify({'token': utfDecodedToken})
+            utfDecodedToken = newToken.decode('UTF-8')
+            return jsonify({'token': utfDecodedToken})
+    except:
+        make_response("Bad request parameters. Try again", 400)
 
     return make_response("Credentials don't match. Try again", 401)
 
 @app.route('/register', methods=['POST'])
 def registration():
     '''
-        Expecting this JSON:
+        Expecting this JSON structure in body:
         {
             'username' : "abc",
             'password': "abc",
             'email': "abc@abc"
         }
     '''
-    #try to get the body data as JSON, fail otherwise
-    try:
+    try: #try to get the body data as JSON, fail otherwise
         body = request.json
         app.logger.info("Received: " + str(body))
         if body:
             username = body['username']
-            pwd = body['password']
+            pwd = body['password'] # 👇 password hashing 👇
             email = body['email']
 
-            app.logger.info("New user received: " + username + "email: " + email)
+            # add to our storage
+            newUser = User(username, pwd, email)
+
+            app.logger.info("New user registered: " + newUser.username + "email: " + newUser.email)
+            ds.store(newUser)
+
             return make_response("Welcome <strong>{}</strong>. Have a pleasant stay".format(username), 201)
     except:
         app.logger.info("Unable to parse POST")

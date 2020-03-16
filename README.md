@@ -26,7 +26,7 @@ Then choose between automatic or manual dependency installation:
 $ . install-dependencies.sh
 ```
 - manual dependency installation
-  ```
+```
 # make sure pip3 is installed
 pip3 install -r requirements.txt
 ```
