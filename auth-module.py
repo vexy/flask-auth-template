@@ -1,4 +1,5 @@
 
+# -*- coding: utf-8 -*-
 from flask import Flask, jsonify, request, make_response
 from functools import wraps
 from tokenizer.tokenizer import Tokenizer
@@ -20,17 +21,11 @@ def token_access_required(f):
             return jsonify({'message': 'Token is missing!'}), 403
 
         try:
-            print("Retrieved token = " + token)
-            # check for token existance
-            # data = jwt.decode(token, app.config['SECRET_KEY'])
-
-            # initialize tokenizer
-            # check if we can pull out token
+            # make sure we can decode token
             tokenSupport = Tokenizer(app.config['SECRET_KEY'])
             decoded = tokenSupport.decodeToken(token)
-            print("Decoded token: " + decoded)
         except:
-            return jsonify({'message': 'Invalid token supplied!'}), 403
+            return jsonify({'message': 'Invalid token supplied!'}), 401
         return f(*args, **kwargs)
 
     return decorated
@@ -52,25 +47,21 @@ def login():
     # get authorization field from HTTP request
     # and early exit if it doesn't exist
     auth = request.authorization
-
-    print("All auth fields dump")
-    for k in auth:
-        print("auth[" + k + "] = " + auth[k])
     if not auth:
-        return make_response("Where's your token 🤔", 401, {'WWW-Authenticate': 'Basic realm="Login required"'})
+        return make_response("Token based login required 🤔", 401, {'WWW-Authenticate': 'Basic realm="Login required"'})
 
     # 👇 DIFFERENT STRATEGIES POSSIBLE 👇
-    if auth.password == 'test':
+    if auth.password == 'test123':
         username = auth.username
 
-        # initialize tokenizer and get token
+        # create new token using Tokenizer
         tokenSupport = Tokenizer(app.config['SECRET_KEY'])
-        token = tokenSupport.createToken(username)
+        newToken = tokenSupport.createToken(username)
 
         utfDecodedToken = token.decode('UTF-8')
         return jsonify({'token': utfDecodedToken})
 
-    return make_response('Could not verify!', 401, {'WWW-Authenticate': 'Basic realm="Login required"'})
+    return make_response("Credentials don't match. Try again", 401)
 
 
 # ---------------------------------

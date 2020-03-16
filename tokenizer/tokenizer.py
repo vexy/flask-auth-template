@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import jwt
 import datetime
 
@@ -15,17 +16,15 @@ class Tokenizer():
             'user': username,
             'expiration': tokenExpiry
         }
-        print("<TOKENIZER> content is:" + tokenContent)
 
         # 'crypt' it this way:
         fullToken = jwt.encode(tokenContent, self.secretKey, algorithm='HS256')
-        print("<TOKENIZER> Token is" + fullToken)
         return fullToken
 
     # returns a decoded token
-    def decodeToken(self, rawData):
-        output = jwt.decode(rawData, self.secretKey)
-        print("<TOKENIZER> Decoded token: " + output)
+    def decodeToken(self, rawToken):
+        output = jwt.decode(rawToken, self.secretKey, algorithms=['HS256'])
+        print("<TOKENIZER> Decoded token: " + str(output))
         return output
 
 
