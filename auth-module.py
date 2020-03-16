@@ -15,14 +15,20 @@ def token_access_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = request.args.get('token') #get token from URL
+        print("Retrieved token = " + token)
 
         if not token:
             return jsonify({'message': 'Token is missing!'}), 403
 
         try:
+            # check for token existance
+            # data = jwt.decode(token, app.config['SECRET_KEY'])
+
             # initialize tokenizer
-            tokenSupport = Tokenizer()
-            data = tokenSupport(token, app.config['SECRET_KEY'])
+            tokenSupport = Tokenizer(app.config['SECRET_KEY'])
+            # check if we can pull out token
+            decoded = tokenSupport.decodeToken(token)
+            print("Decoded token: " + decoded)
         except:
             return jsonify({'message': 'Invalid token supplied!'}), 403
         return f(*args, **kwargs)
@@ -50,11 +56,12 @@ def login():
 
     # 👇 DIFFERENT STRATEGIES POSSIBLE 👇
     if auth.password == 'test':
-        # initialize tokenizer
-        tokenSupport = Tokenizer()
+        username = auth.username
 
-        usrname = auth.username
-        token = tokenSupport(username, app.config['SECRET_KEY'])
+        # initialize tokenizer and get token
+        tokenSupport = Tokenizer(app.config['SECRET_KEY'])
+        token = tokenSupport.createToken(username)
+
         utfDecodedToken = token.decode('UTF-8')
         return jsonify({'token': utfDecodedToken})
 

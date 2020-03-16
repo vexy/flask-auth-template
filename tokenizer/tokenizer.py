@@ -1,28 +1,33 @@
 import jwt
 import datetime
 
-class Tokenizer:
+class Tokenizer():
+    secretKey = ''
+
+    def __init__(self, key):
+        self.secretKey = key
+
     # 👇 DIFFERENT STRATEGIES POSSIBLE 👇
-    def createToken(self, username, secretKey):
+    def createToken(self, username):
         # define content as a mix of username and expiration date
-        tokenExpiry = setupExpiry()
+        tokenExpiry = self.setupExpiry()
         tokenContent = {
             'user': username,
             'expiration': tokenExpiry
         }
 
         # 'crypt' it this way:
-        fullToken = jwt.encode(tokenContent, secretKey, algorithm='HS256')
+        fullToken = jwt.encode(tokenContent, self.secretKey, algorithm='HS256')
         return fullToken
 
     # returns a decoded token
-    def decodeToken(self, rawData, secretKey):
-        output = jwt.decode(rawData, secretKey)
+    def decodeToken(self, rawData):
+        output = jwt.decode(rawData, self.secretKey)
         print("Decoded token: " + output)
         return output
 
 
     # 👇 DIFFERENT STRATEGIES POSSIBLE 👇
-    def setupExpiry():
+    def setupExpiry(self):
         # sets token expiration to 30 minutes from now
         return str(datetime.datetime.utcnow() + datetime.timedelta(minutes=30))
