@@ -1,29 +1,58 @@
-# Authentication mechanism based on Flask + JWT
-This repository represents the source code template for `Flask` implementation of `JWT` based authentication.
-It can be used as starting point for more complex projects and requirements or can be completely customised to serve your needs.
+# Authentication gate with Flask & JWT
+This repository represents the source code template for micro webserver that provides authentication gate for your protected resources.
 
-## Installation and usage
-Perhaps the easiest way to start would be executing `startup.sh` script. Simple `(user)$ . startup.sh` would do the trick on UNIX based systems.
-
-Alternatively, step by step guide would be:
-  - `clone` this repository (*aim for master*)
-  - `cd flask-auth-template`
-  - `pip3 install -r requirements.txt`
-  - `python3 auth-module.py`
-
-**NOTE:** if you're on `MacOS` platforms, there might be a struggle with running this project due to known collision of `Python2.7` and `Python3+`. The conflict might be seen as "Module Import Error" no matter which Python you are using.
-To solve this, you might have to "fix" your `PYTHONPATH`.  Check out this [article](https://bic-berkeley.github.io/psych-214-fall-2016/using_pythonpath.html) for more information.
+It is written in `Python` using `Flask` framework and relies on `JWT` authentication mechanism.  
+Some of the provided strategies are to basic/simple for **serious**, production level webserver. Use this template as starting point for more complex projects and requirements.
 
 ### JWT based
-`JSON Web Tokens` - or [JWT](https://jwt.io/) in short - are the foundation of the authentication mechanism presented here.  
-Be sure **not to forget** to decode/encode token generation at your own strategy. Follow code comments for exact place where you need to modify or customise this behaviour.
+`JSON Web Tokens` - or [JWT](https://jwt.io/) in short - is the foundation authentication principle used in this template.  
+Be sure **not to forget** to encode/decode token generation at your own strategy. Follow code comments for exact place where you could modify or customise this behaviour.
 
 ### No database !
-Any DB layer has been **intentionally** omitted to allow space for your own implementation. In this form, the code template stores all generated tokens **in memory** and are only valid until next server restart. For more convenient mechanism, store your `tokens` in some form of persistent storage.
+DB layer has been **intentionally omitted** to allow space for your own implementation. In present form, the code handles all tokens **in memory**, making the data available only while the server is running. All registration data (as well as tokens) will disappear after the server shut down.
+For more convenient mechanism, store your tokens in some form of persistent storage, or reuse them in different way.
 
-#### Word of wisdom
-If you ever get stuck during coding, remember that `sudo` is your friend. If that doesn't help, just one cold 🍺 can magically make your life look way more beautiful.
+### Modularised
+Template is designed to support modular structure. Main application modules are stored in `modules` folder. If you need more modules, you can place them inside - as long as they are connected in the main module.
+
+### Different authentication strategies
+Presented here is basic HTTP AUTHENTICATION through Authentication field. Note there are **way secure** authentication mechanisms, such as `OAuth`.
+
+### Installation
+Before you begin:
+```
+git clone
+cd flask-auth-template
+```
+Then proceed with installing dependencies:
+```bash
+# Run prepacked script
+$ . install-dependencies.sh
+# or
+# install manually through pip3
+$ pip3 install -r requirements.txt
+```
+
+### Starting server
+Template will setup and start a server listening on `localhost`. Check the debug output for more information.  
+
+Start the server using:
+```bash
+python3 main-module.py
+# or
+# run using startup script
+$ . start.sh
+```
+
+**:NOTE:** for `MacOS` users:  
+There might be a struggle with starting this project, due to known collision of `Python2.xx` and `Python3.xx` coexisting on same platform. The conflict might be manifested as good ol' *"Module Import Error"* no matter which Python you are using.
+To solve this, you might have to "fix" (play around with) your `PYTHONPATH`.  Check out this [article](https://bic-berkeley.github.io/psych-214-fall-2016/using_pythonpath.html) for more information.
 
 ----
 
-Copyright © 2020 Veljko Tekelerović
+#### Word of wisdom
+If you ever get stuck remember that `sudo` is your friend. If it doesn't help, start thinking how one cold 🍺 can magically improve your understanding of the 🌎.
+
+
+Copyright © 2020 Veljko Tekelerović  
+MIT License

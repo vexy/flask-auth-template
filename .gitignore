@@ -1,0 +1,6 @@
+# Python outputs
+__pycache__/
+*.pyc
+
+# MacOS stuff
+.DS_Store
