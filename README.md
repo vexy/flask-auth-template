@@ -10,7 +10,10 @@ Be sure **not to forget** to encode/decode token generation at your own strategy
 
 ### No database !
 DB layer has been **intentionally omitted** to allow space for your own implementation. In present form, the code handles all tokens **in memory**, making the data available only while the server is running. All registration data (as well as tokens) will disappear after the server shut down.
-For more convenient mechanism, store your `tokens` in some form of persistent storage, or reuse them in different way.
+For more convenient mechanism, store your tokens in some form of persistent storage, or reuse them in different way.
+
+### Modularised
+Template is designed to support modular structure. Main application modules are stored in `modules` folder. If you need more modules, you can place them inside - as long as they are connected in the main module.
 
 ### Different authentication strategies
 Presented here is basic HTTP AUTHENTICATION through Authentication field. Note there are **way secure** authentication mechanisms, such as `OAuth`.
@@ -25,7 +28,7 @@ Then proceed with installing dependencies:
 ```bash
 # Run prepacked script
 $ . install-dependencies.sh
-
+# or
 # install manually through pip3
 $ pip3 install -r requirements.txt
 ```
@@ -35,9 +38,9 @@ Template will setup and start a server listening on `localhost`. Check the debug
 
 Start the server using:
 ```bash
-python3 auth-module.py
-
-# or run using startup script
+python3 main-module.py
+# or
+# run using startup script
 $ . start.sh
 ```
 

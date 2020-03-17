@@ -25,3 +25,7 @@ class UserDataStorage():
 
     def totalCount(self):
         return len(list(self.allUsers))
+
+
+# shared reference to a single storage
+sharedStorage = UserDataStorage()

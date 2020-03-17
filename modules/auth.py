@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, Blueprint, jsonify, request, make_response
+from flask import Flask, Blueprint
+from flask import jsonify, request, make_response
 from flask import current_app
 from services.tokenizer import Tokenizer
-from services.storage import UserDataStorage
+from services.storage import sharedStorage
 from models.user import User
-
-# reference to a storage
-storageProxy = UserDataStorage()
 
 # public blueprint exposure
 authRoute = Blueprint('auth', __name__)
@@ -21,7 +19,7 @@ def login():
     try: # search our storage to check credentials
         username = auth.username
         password = auth.password
-        storedUser = storageProxy.find(username)
+        storedUser = sharedStorage.find(username)
 
         # 👇 perform validity check and password hashing 👇
         if storedUser is not None and storedUser.password == password:
@@ -65,7 +63,7 @@ def registration():
             newUser = User(username, pwd, email)
 
             current_app.logger.info(f"<AUTH> Adding new user: {newUser.username}, email: {newUser.email}")
-            storageProxy.store(newUser)
+            sharedStorage.store(newUser)
 
             return make_response("<h2>Welcome to the system</h2><br>Have a pleasant stay <strong>{}</strong> and enjoy the system :)".format(newUser.username), 201)
     except:
