@@ -3,19 +3,25 @@ from models.user import User
 
 # represents a basic in memory storage heap
 class UserDataStorage():
-    allUsers = None
-
     def __init__(self):
         self.allUsers = []
 
     def store(self, userData):
         self.allUsers.append(userData)
-        print("<STORAGE> New user stored.")
+        print(f"<STORAGE> New user stored: {userData.username}")
 
     # search all usernames and return matching user
-    def getData(self, matchingUsername):
-        retuslt = None
+    def find(self, targetUsername):
+        result = None
         for user in self.allUsers:
-            if user.username == matchingUsername:
+            if user.username == targetUsername:
                 result = user
+                break
         return result
+
+    # returns a list of all stored objects
+    def asList(self):
+        return list(self.allUsers)
+
+    def totalCount(self):
+        return len(list(self.allUsers))

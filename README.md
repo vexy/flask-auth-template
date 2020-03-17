@@ -1,7 +1,7 @@
 # Authentication gate with Flask & JWT
 This repository represents the source code template for micro webserver that provides authentication gate for your protected resources.
 
-It is written in `Python` using `Flask` framework. `JWT` tokens are base authentication mechanism.  
+It is written in `Python` using `Flask` framework and relies on `JWT` authentication mechanism.  
 Some of the provided strategies are to basic/simple for **serious**, production level webserver. Use this template as starting point for more complex projects and requirements.
 
 ### JWT based
@@ -9,8 +9,11 @@ Some of the provided strategies are to basic/simple for **serious**, production 
 Be sure **not to forget** to encode/decode token generation at your own strategy. Follow code comments for exact place where you could modify or customise this behaviour.
 
 ### No database !
-DB layer has been **intentionally omitted** to allow space for your own implementation. In present form, the code handles all tokens **in memory**, making the tokens  available only while the server is running. All tokens will disappear after the server shuts down.  
+DB layer has been **intentionally omitted** to allow space for your own implementation. In present form, the code handles all tokens **in memory**, making the data available only while the server is running. All registration data (as well as tokens) will disappear after the server shut down.
 For more convenient mechanism, store your `tokens` in some form of persistent storage, or reuse them in different way.
+
+### Different authentication strategies
+Presented here is basic HTTP AUTHENTICATION through Authentication field. Note there are **way secure** authentication mechanisms, such as `OAuth`.
 
 ### Installation
 Before you begin:
@@ -18,29 +21,24 @@ Before you begin:
 git clone
 cd flask-auth-template
 ```
-Then choose between automatic or manual dependency installation:
-
-- installing via pre-packed script (_automatic_)
-```
-# On UNIX based platforms, just:
+Then proceed with installing dependencies:
+```bash
+# Run prepacked script
 $ . install-dependencies.sh
-```
-- manual dependency installation
-```
-# make sure pip3 is installed
-pip3 install -r requirements.txt
+
+# install manually through pip3
+$ pip3 install -r requirements.txt
 ```
 
 ### Starting server
 Template will setup and start a server listening on `localhost`. Check the debug output for more information.  
 
-To start the server:
-```
+Start the server using:
+```bash
 python3 auth-module.py
-```
-or run the start script
-```
-$ . start.sh  #
+
+# or run using startup script
+$ . start.sh
 ```
 
 **:NOTE:** for `MacOS` users:  

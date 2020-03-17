@@ -3,8 +3,6 @@ import jwt
 import datetime
 
 class Tokenizer():
-    secretKey = ''
-
     def __init__(self, key):
         self.secretKey = key
 
