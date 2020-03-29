@@ -9,7 +9,7 @@ from models.user import User
 # public blueprint exposure
 authRoute = Blueprint('auth', __name__)
 
-@authRoute.route('/login')
+@authRoute.route('/login', methods=['POST'])
 def login():
     # get authorization field from HTTP request, early exit if it's not present
     auth = request.authorization
@@ -21,7 +21,7 @@ def login():
         password = auth.password
         storedUser = sharedStorage.find(username)
 
-        # 👇 perform validity check and password hashing 👇
+        # 👇 implement your strategy here 👇
         if storedUser is not None and storedUser.password == password:
             current_app.logger.info(f"<AUTH> Security check completed, passwords match.")
             # create new token using Tokenizer
@@ -56,7 +56,7 @@ def registration():
         body = request.json
         if body:
             username = body['username']
-            pwd = body['password'] # 👇 password hashing 👇
+            pwd = body['password'] # 👈 add password hashing strategy here
             email = body['email']
 
             # add to our storage

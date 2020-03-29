@@ -16,6 +16,13 @@ if __name__ == '__main__':
     app.register_blueprint(authRoute)
     app.register_blueprint(protectedRoute)
 
+# make sure this is turned off
+@app.after_request
+def attachCORSHeader(response):
+    response.headers.set('Access-Control-Allow-Headers', '*')
+    response.headers.set('Access-Control-Allow-Origin', '*')
+    return response
+
 # Publicly accessible routes
 # ------------------------------
 @app.route('/')

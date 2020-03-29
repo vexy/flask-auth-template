@@ -2,7 +2,8 @@
 This repository represents the source code template for micro webserver that provides authentication gate for your protected resources.
 
 It is written in `Python` using `Flask` framework and relies on `JWT` authentication mechanism.  
-Some of the provided strategies are to basic/simple for **serious**, production level webserver. Use this template as starting point for more complex projects and requirements.
+Some of the provided strategies are to basic/simple for **serious**, production level webserver.  
+Use this template as starting point for more complex projects and requirements.
 
 ### JWT based
 `JSON Web Tokens` - or [JWT](https://jwt.io/) in short - is the foundation authentication principle used in this template.  
@@ -18,9 +19,12 @@ Template is designed to support modular structure. Main application modules are 
 ### Different authentication strategies
 Presented here is basic HTTP AUTHENTICATION through Authentication field. Note there are **way secure** authentication mechanisms, such as `OAuth`.
 
+#### CORS setup
+For the sake of simplicity, CORS has been enabled completely. Server will accept all origins no matter where the request comes from. Check and/or modify `@app.after_request` directive to further customise desired behaviour (lines [20-24](https://github.com/vexy/flask-auth-template/blob/master/main-module.py#L20-L24) in `main-module.py`).
+
 ### Installation
 Before you begin:
-```
+```bash
 git clone
 cd flask-auth-template
 ```
