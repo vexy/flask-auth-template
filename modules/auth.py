@@ -9,7 +9,7 @@ from models.user import User
 # public blueprint exposure
 authRoute = Blueprint('auth', __name__)
 
-@authRoute.route('/login')
+@authRoute.route('/login', methods=['POST'])
 def login():
     # get authorization field from HTTP request, early exit if it's not present
     auth = request.authorization
