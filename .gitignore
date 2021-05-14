@@ -4,3 +4,13 @@ __pycache__/
 
 # MacOS stuff
 .DS_Store
+
+# VS Code Workspace
+*.code-workspace
+.vscode
+_config.yml
+
+# Virtual Env
+bin
+pyvenv.cfg
+lib
