@@ -9,6 +9,7 @@ from models.user import User
 # public blueprint exposure
 authRoute = Blueprint('auth', __name__)
 
+# 👇 implement your strategy here 👇
 @authRoute.route('/login', methods=['POST'])
 def login():
     # get authorization field from HTTP request, early exit if it's not present
@@ -36,12 +37,14 @@ def login():
 
     return make_response("Wrong credentials.", 401)
 
+# 👇 implement your strategy here 👇
 @authRoute.route('/logout')
 def logout():
     current_app.logger.info("Someone logged out")
-    # remove token from the storage
+    # eg. remove/invalidate token from our storage
     return "You have been logged out.. But who are you ??"
 
+# 👇 implement your strategy here 👇
 @authRoute.route('/register', methods=['POST'])
 def registration():
     '''
@@ -56,10 +59,11 @@ def registration():
         body = request.json
         if body:
             username = body['username']
-            pwd = body['password'] # 👈 add password hashing strategy here
+            pwd = body['password']
             email = body['email']
 
             # add to our storage
+            # 👈 add password hashing strategy here before saving to DB
             newUser = User(username, pwd, email)
 
             current_app.logger.info(f"<AUTH> Adding new user: {newUser.username}, email: {newUser.email}")
